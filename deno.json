@@ -1,7 +1,7 @@
 {
-    "name": "@debutter/deno-jsr-template",
-    "version": "0.1.0",
-    "license": "UNLICENSED",
+    "name": "@debutter/jsbin",
+    "version": "1.0.2",
+    "license": "MIT",
     "tasks": {
         "test": "deno test -A",
         "dev": "deno test -A --watch",
@@ -17,7 +17,6 @@
     "publish": {
         "exclude": [
             "test/",
-            "biome.json",
             "dist/",
             "public/",
             "bundle.ts",

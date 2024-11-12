@@ -32,7 +32,7 @@ export default {
             return new Response("404 Not Found", { status: 404 });
         }
     },
-};
+} satisfies Deno.ServeDefaultExport;
 
 function createHeaders(filepath: string): Headers {
     if (filepath.endsWith(".js")) {

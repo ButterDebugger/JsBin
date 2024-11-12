@@ -1,48 +1,50 @@
-# 🦕 Deno + JSR Template
+# JsBin
 
-A starter template for a new Deno and JSR project.
+A simple and lightweight library designed to provide efficient binary
+serialization for JavaScript objects. This makes it easy to encode JavaScript
+data structures into compact binary formats, saving space and improving
+transmission speeds.
+
+## Installation
+
+For Node.js:
+
+```bash
+npx jsr add @debutter/jsbin
+```
+
+For Deno:
+
+```bash
+deno add jsr:@debutter/jsbin
+```
+
+For Browsers:
+
+```javascript
+import * as JsBin from "https://esm.sh/jsr/@debutter/jsbin@VERSION";
+```
 
 ## Usage
 
-Click
-[here](https://github.com/new?template_name=deno-jsr-template&template_owner=butterdebugger)
-to create a new repository using this starter template.
+Example usage for encoding and decoding objects:
 
-Run automatic tests using Deno:
+```javascript
+import { decode, encode } from "@debutter/jsbin";
 
-```console
-$ deno task dev
+const data = {
+    message: "Hello, world!",
+};
+
+// Encode to binary
+const encoded = encode(data);
+
+// Decode from binary
+const decoded = decode(encoded);
+
+console.log(decoded); // { message: "Hello, world!" }
 ```
 
-Bundles the source code to vanilla JavaScript:
+# Contributing
 
-```console
-$ deno task bundle
-```
-
-Lints and formats the source code:
-
-```console
-$ deno task fix
-```
-
-Run automatic bundling and boot a server for web tests:
-
-```console
-$ deno task web
-```
-
-## Checklist
-
-- [ ] Replace `@debutter/deno-jsr-template` in `deno.json` with the name of your
-      JSR package
-- [ ] Change this `README.md` to reflect your project
-- [ ] Add a LICENSE and update the `license` field in `deno.json`
-- [ ] Write code and tests
-- [ ] Add JSDocs to all of your exported declarations
-- [ ] Link GitHub repository on JSR
-- [ ] Commit and deploy to production
-
-## License
-
-None at the moment. Enjoy!
+Contributions are welcome! Please feel free to submit a Pull Request.
