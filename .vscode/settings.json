@@ -1,0 +1,7 @@
+{
+    "editor.formatOnSave": true,
+    "deno.enable": true,
+    "deno.disablePaths": [
+        "./public/"
+    ]
+}
