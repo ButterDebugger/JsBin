@@ -25,7 +25,8 @@
     },
     "lint": {
         "exclude": [
-            "./public/"
+            "./public/",
+            "./dist/"
         ],
         "rules": {
             "tags": [
@@ -42,7 +43,8 @@
     },
     "fmt": {
         "exclude": [
-            "./public/"
+            "./public/",
+            "./dist/"
         ],
         "indentWidth": 4,
         "useTabs": false
