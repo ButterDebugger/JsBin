@@ -1,4 +1,4 @@
-import { strictTypeof } from "./utils.ts";
+import { strictTypeof } from "@debutter/helper";
 
 enum Tags {
     End = 0, // End of Array or Object

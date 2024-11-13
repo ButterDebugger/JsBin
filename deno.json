@@ -1,6 +1,6 @@
 {
     "name": "@debutter/jsbin",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "license": "MIT",
     "tasks": {
         "test": "deno test -A",
@@ -11,6 +11,7 @@
         "publish": "deno task fix && deno task test && deno publish"
     },
     "imports": {
+        "@debutter/helper": "jsr:@debutter/helper@^1.0.0",
         "@std/assert": "jsr:@std/assert@1"
     },
     "exports": "./src/index.ts",
