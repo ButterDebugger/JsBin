@@ -29,7 +29,13 @@ Deno.test("Encode and decode", () => {
             [2n, "b"],
             [3n, "c"],
         ]),
+        regex: /[a-z]/g,
+        example_url: new URL(
+            "https://username:password@example.com:3000/pathname?q=jsbin&what=3#hash",
+        ),
     };
+
     const result = decode(encode(value));
+
     assertEquals(result, value, "Decoding does not match the original value.");
 });

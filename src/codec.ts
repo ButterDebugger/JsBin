@@ -13,6 +13,8 @@ enum Tags {
     Set = 9, // Set<unknown>
     Map = 10, // Map<unknown, unknown>
     undefined = 11,
+    RegExp = 12,
+    URL = 13,
 }
 
 const CURRENT_VERSION: string = "1";
@@ -153,6 +155,18 @@ function encodeValue(item: unknown): number[] {
             return [Tags.BigInt].concat(encodeBigInt(<bigint> item));
         case "undefined":
             return [Tags.undefined];
+        case "RegExp": {
+            const aRegex = <RegExp> item;
+
+            return [Tags.RegExp]
+                .concat(encodeString(aRegex.source))
+                .concat(encodeString(aRegex.flags));
+        }
+        case "URL": {
+            const aUrl = <URL> item;
+
+            return [Tags.URL].concat(encodeString(aUrl.href));
+        }
         default:
             throw new Error("Unsupported data type.");
     }
@@ -345,6 +359,17 @@ function decodeReader(reader: Reader): unknown {
         }
         case Tags.undefined: {
             return undefined;
+        }
+        case Tags.RegExp: {
+            const source = decodeString(reader);
+            const flags = decodeString(reader);
+
+            return new RegExp(source, flags);
+        }
+        case Tags.URL: {
+            const url = decodeString(reader);
+
+            return new URL(url);
         }
         default: {
             throw new Error("Unknown tag.");
