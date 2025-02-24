@@ -30,10 +30,9 @@ const CURRENT_VERSION: string = "1";
  */
 export function encode(obj: unknown): Uint8Array {
     // Compute the encoded result and prepend the version tag
-    const bytes: number[] = [
-        ...encodeString(CURRENT_VERSION),
-        ...encodeValue(obj),
-    ];
+    const bytes: number[] = encodeString(CURRENT_VERSION).concat(
+        encodeValue(obj),
+    );
 
     // Return the encoded result as an Uint8Array
     return new Uint8Array(bytes);
