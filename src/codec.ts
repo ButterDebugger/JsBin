@@ -17,7 +17,7 @@ enum Tags {
     URL = 13,
 }
 
-const CURRENT_VERSION: string = "1";
+const CURRENT_VERSION: string = "2";
 
 /*
  *  Encoding methods
