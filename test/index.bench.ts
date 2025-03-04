@@ -70,6 +70,7 @@ const obj = {
 Deno.bench({
     name: "JsBin encode",
     group: "Serialization",
+    baseline: true,
     fn(): void {
         encode(obj);
     },
@@ -98,6 +99,7 @@ const superStringified = superjson.stringify(obj);
 Deno.bench({
     name: "JsBin decode",
     group: "Deserialization",
+    baseline: true,
     fn(): void {
         decode(encoded);
     },
