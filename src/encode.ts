@@ -1,6 +1,8 @@
 import { CURRENT_VERSION, Tags } from "./codec.ts";
 import { strictTypeof } from "@debutter/helper";
 
+const textEncoder = new TextEncoder();
+
 /**
  * Encodes the data into a binary format
  * @param obj The input data
@@ -151,8 +153,7 @@ function encodeValue(item: unknown): number[] {
 
 function encodeString(string: string): number[] {
     let data: number[] = [];
-    const encoder = new TextEncoder();
-    const text = encoder.encode(string);
+    const text = textEncoder.encode(string);
 
     data = data.concat(encodeNumber(text.length));
     data = data.concat(Array.from(text));

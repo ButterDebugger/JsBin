@@ -1,5 +1,7 @@
 import { CURRENT_VERSION, Tags } from "./codec.ts";
 
+const textDecoder = new TextDecoder();
+
 /**
  * The reader function used by JsBin's decoder
  */
@@ -162,8 +164,7 @@ function decodeReader(reader: Reader): unknown {
 
 function decodeString(reader: Reader): string {
     const length = decodeNumber(reader);
-    const decoder = new TextDecoder();
-    return decoder.decode(new Uint8Array(reader(length)));
+    return textDecoder.decode(new Uint8Array(reader(length)));
 }
 function decodeNumber(reader: Reader): number {
     const nums = reader(8);
