@@ -17,8 +17,3 @@ export enum Tags {
     RegExp = 12,
     URL = 13,
 }
-
-/**
- * The current version string of the binary format
- */
-export const CURRENT_VERSION: string = "2";

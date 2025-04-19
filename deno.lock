@@ -1,7 +1,6 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@debutter/helper@1": "1.0.0",
     "jsr:@luca/esbuild-deno-loader@0.11.0": "0.11.0",
     "jsr:@std/assert@*": "1.0.7",
     "jsr:@std/assert@1": "1.0.7",
@@ -12,9 +11,6 @@
     "npm:superjson@*": "2.2.2"
   },
   "jsr": {
-    "@debutter/helper@1.0.0": {
-      "integrity": "58b0d93ad49aec3a527a96e97dce2fa416c3efba6b8ccbe101b0973b33003609"
-    },
     "@luca/esbuild-deno-loader@0.11.0": {
       "integrity": "c05a989aa7c4ee6992a27be5f15cfc5be12834cab7ff84cabb47313737c51a2c",
       "dependencies": [
@@ -67,7 +63,6 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@debutter/helper@1",
       "jsr:@std/assert@1"
     ]
   }
