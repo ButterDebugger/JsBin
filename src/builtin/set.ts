@@ -13,13 +13,13 @@ export const SetTransformer: Transformer<Set<unknown>> = registerTransformer<
             const value = setIter.next().value;
 
             if (i % 0xff === 0) {
-                encoder.write(new Uint8Array([Math.min(set.size - i, 0xff)]));
+                encoder.writeByte(Math.min(set.size - i, 0xff));
             }
 
             encoder.serialize(value);
         }
 
-        encoder.write(new Uint8Array([Tags.End])); // End of object marker
+        encoder.writeByte(Tags.End); // End of object marker
     },
     deserialize: (decoder) => {
         const set = new Set();
@@ -27,7 +27,7 @@ export const SetTransformer: Transformer<Set<unknown>> = registerTransformer<
 
         while (true) {
             if (itemsLeft === 0) {
-                const extension = decoder.read(1)[0];
+                const extension = decoder.readByte();
                 if (extension === 0) break;
 
                 itemsLeft += extension;

@@ -24,7 +24,7 @@ export const MapTransformer: Transformer<Map<unknown, unknown>> =
                 encoder.serialize(value);
             }
 
-            encoder.write(new Uint8Array([Tags.End])); // End of object marker
+            encoder.writeByte(Tags.End); // End of object marker
         },
         deserialize: (decoder) => {
             const map = new Map();
@@ -32,7 +32,7 @@ export const MapTransformer: Transformer<Map<unknown, unknown>> =
 
             while (true) {
                 if (itemsLeft === 0) {
-                    const extension = decoder.read(1)[0];
+                    const extension = decoder.readByte();
                     if (extension === 0) break;
 
                     itemsLeft += extension;

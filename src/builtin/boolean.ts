@@ -7,9 +7,9 @@ export const BooleanTransformer: Transformer<boolean> = registerTransformer<
 >(Tags.Boolean, {
     isApplicable: (value) => typeof value === "boolean",
     serialize: (encoder, boolean) => {
-        encoder.write(new Uint8Array([boolean ? 1 : 0]));
+        encoder.writeByte(boolean ? 1 : 0);
     },
     deserialize: (decoder) => {
-        return decoder.read(1)[0] === 1;
+        return decoder.readByte() === 1;
     },
 });

@@ -13,15 +13,63 @@ export type Transformer<In> = {
  * The encoder class which transformers use
  */
 export class Encoder {
+    private growthFactor = 2;
+    private capacity: number;
     private size = 0;
-    private buffers: Uint8Array[] = [];
+    private buffer: Uint8Array;
+
+    constructor(initialCapacity = 256) {
+        this.capacity = initialCapacity;
+        this.buffer = new Uint8Array(this.capacity);
+    }
 
     /**
-     * Writes a new Uint8Array to the encoder
+     * Writes an Uint8Array to the encoder
      */
     write(bytes: Uint8Array): void {
+        const requiredCapacity = this.size + bytes.length;
+
+        // Check if the buffer needs to be resized
+        if (requiredCapacity > this.capacity) {
+            // Grow the buffer exponentially by the growth factor
+            this.capacity = Math.max(
+                Math.ceil(this.capacity * this.growthFactor),
+                requiredCapacity,
+            );
+
+            // Create new buffer and copy the date
+            const newBuffer = new Uint8Array(this.capacity);
+            newBuffer.set(this.buffer, 0);
+            this.buffer = newBuffer;
+        }
+
+        // Write the bytes
+        this.buffer.set(bytes, this.size);
         this.size += bytes.length;
-        this.buffers.push(new Uint8Array(bytes));
+    }
+
+    /**
+     * Writes a single byte to the encoder
+     */
+    writeByte(byte: number): void {
+        const requiredCapacity = this.size + 1;
+
+        // Check if the buffer needs to be resized
+        if (requiredCapacity > this.capacity) {
+            // Grow the buffer exponentially by the growth factor
+            this.capacity = Math.max(
+                Math.ceil(this.capacity * this.growthFactor),
+                requiredCapacity,
+            );
+
+            // Create new buffer and copy the date
+            const newBuffer = new Uint8Array(this.capacity);
+            newBuffer.set(this.buffer, 0);
+            this.buffer = newBuffer;
+        }
+
+        // Write the byte
+        this.buffer[this.size++] = byte;
     }
 
     /**
@@ -37,7 +85,7 @@ export class Encoder {
     serialize(value: unknown): void {
         for (const [tag, transformer] of transformers) {
             if (transformer.isApplicable(value)) {
-                this.write(new Uint8Array([tag]));
+                this.writeByte(tag);
 
                 transformer.serialize(this, value);
                 break;
@@ -46,18 +94,10 @@ export class Encoder {
     }
 
     /**
-     * Merge all the buffers into a single Uint8Array
+     * Returns the final Uint8Array containing only the written data
      */
     merge(): Uint8Array {
-        const merged = new Uint8Array(this.size);
-        let offset = 0;
-
-        for (const buffer of this.buffers) {
-            merged.set(buffer, offset);
-            offset += buffer.length;
-        }
-
-        return merged;
+        return this.buffer.subarray(0, this.size);
     }
 }
 
@@ -81,12 +121,28 @@ export class Decoder {
     }
 
     /**
+     * Reads and removes a single byte from the content
+     * @returns The read byte
+     */
+    readByte(): number {
+        return this.bytes[this.cursor++];
+    }
+
+    /**
      * Reads a number of bytes from the content without removing them
      * @param length The number of bytes to read
      * @returns The read bytes
      */
     peek(length: number): Uint8Array {
-        return this.bytes.slice(this.cursor, this.cursor + length);
+        return this.bytes.subarray(this.cursor, this.cursor + length);
+    }
+
+    /**
+     * Reads a single byte from the content without removing it
+     * @returns The read byte
+     */
+    peekByte(): number {
+        return this.bytes[this.cursor];
     }
 
     /**
@@ -94,7 +150,7 @@ export class Decoder {
      * @returns The decoded value
      */
     deserialize(): unknown {
-        const tag = this.read(1)[0];
+        const tag = this.readByte();
         const transformer = transformers.get(tag);
 
         if (!transformer) {

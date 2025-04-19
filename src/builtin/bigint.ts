@@ -7,11 +7,11 @@ export const BigIntTransformer: Transformer<bigint> = registerTransformer<
 >(Tags.BigInt, {
     isApplicable: (value) => typeof value === "bigint",
     serialize: (encoder, bigint) => {
-        encoder.write(new Uint8Array([bigint < 0 ? 1 : 0]));
+        encoder.writeByte(bigint < 0 ? 1 : 0);
         let nonNegativeBigint = bigint < 0 ? -bigint : bigint;
 
         if (nonNegativeBigint === 0n) {
-            encoder.write(new Uint8Array([0]));
+            encoder.writeByte(0);
             return;
         }
 
@@ -25,16 +25,16 @@ export const BigIntTransformer: Transformer<bigint> = registerTransformer<
             throw new Error("Unsupported payload length.");
         }
 
-        encoder.write(new Uint8Array([payload.length]));
+        encoder.writeByte(payload.length);
         encoder.write(new Uint8Array(payload));
     },
     deserialize: (decoder) => {
         let bigint = 0n;
-        const sign = decoder.read(1)[0] === 1;
-        const payloadLength = decoder.read(1)[0];
+        const sign = decoder.readByte() === 1;
+        const payloadLength = decoder.readByte();
 
         for (let i = 0; i < payloadLength; i++) {
-            bigint += BigInt(decoder.read(1)[0]) *
+            bigint += BigInt(decoder.readByte()) *
                 256n ** BigInt(payloadLength - i - 1);
         }
 

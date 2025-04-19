@@ -15,14 +15,14 @@ export const ArrayTransformer: Transformer<unknown[]> = registerTransformer<
             }
             encoder.serialize(array[i]);
         }
-        encoder.write(new Uint8Array([0])); // End of array marker
+        encoder.writeByte(Tags.End); // End of array marker
     },
     deserialize: (decoder) => {
         const array = [];
         let itemsLeft = 0;
         while (true) {
             if (itemsLeft === 0) {
-                const extension = decoder.read(1)[0];
+                const extension = decoder.readByte();
                 if (extension === 0) break;
                 itemsLeft += extension;
             }
