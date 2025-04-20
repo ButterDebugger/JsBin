@@ -1,6 +1,6 @@
 import { Tags } from "../codec.ts";
 import { registerTransformer, type Transformer } from "../transformer.ts";
-import { LengthTransformer } from "../tagless/length.ts";
+import { VarintTransformer } from "../tagless/varint.ts";
 
 const textDecoder = new TextDecoder();
 const textEncoder = new TextEncoder();
@@ -13,11 +13,11 @@ export const StringTransformer: Transformer<string> = registerTransformer<
     serialize: (encoder, string) => {
         const text = textEncoder.encode(string);
 
-        encoder.chain(LengthTransformer, text.length);
+        encoder.chain(VarintTransformer, text.length);
         encoder.write(text);
     },
     deserialize: (decoder) => {
-        const length = decoder.chain(LengthTransformer);
+        const length = decoder.chain(VarintTransformer);
         return textDecoder.decode(decoder.read(length));
     },
 });

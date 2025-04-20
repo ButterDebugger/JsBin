@@ -1,5 +1,5 @@
 import { Tags } from "../codec.ts";
-import { LengthTransformer } from "../tagless/length.ts";
+import { VarintTransformer } from "../tagless/varint.ts";
 import { registerTransformer, type Transformer } from "../transformer.ts";
 
 /** Transformer for arrays */
@@ -9,7 +9,7 @@ export const ArrayTransformer: Transformer<unknown[]> = registerTransformer<
     isApplicable: (value) => Array.isArray(value),
     serialize: (encoder, array) => {
         // Write the length of the array
-        encoder.chain(LengthTransformer, array.length);
+        encoder.chain(VarintTransformer, array.length);
 
         // Write each item in the array
         for (const item of array) {
@@ -17,8 +17,8 @@ export const ArrayTransformer: Transformer<unknown[]> = registerTransformer<
         }
     },
     deserialize: (decoder) => {
-        const length = decoder.chain(LengthTransformer);
-        const array = new Array(length);
+        const length = decoder.chain(VarintTransformer);
+        const array = [];
 
         // Read each item in the array
         for (let i = 0; i < length; i++) {

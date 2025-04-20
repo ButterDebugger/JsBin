@@ -1,5 +1,5 @@
 import { Tags } from "../codec.ts";
-import { LengthTransformer } from "../tagless/length.ts";
+import { VarintTransformer } from "../tagless/varint.ts";
 import { registerTransformer, type Transformer } from "../transformer.ts";
 
 /** Transformer for Sets */
@@ -11,7 +11,7 @@ export const SetTransformer: Transformer<Set<unknown>> = registerTransformer<
         const setIter = set.values();
 
         // Write the length of the set
-        encoder.chain(LengthTransformer, set.size);
+        encoder.chain(VarintTransformer, set.size);
 
         // Write each item in the set
         for (let i = 0; i < set.size; i++) {
@@ -22,7 +22,7 @@ export const SetTransformer: Transformer<Set<unknown>> = registerTransformer<
     },
     deserialize: (decoder) => {
         const set = new Set();
-        const length = decoder.chain(LengthTransformer);
+        const length = decoder.chain(VarintTransformer);
 
         // Read each item in the set
         for (let i = 0; i < length; i++) {

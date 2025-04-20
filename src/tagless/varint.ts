@@ -10,12 +10,10 @@ const BITS_PER_BYTE = 7;
 const CONTINUATION_THRESHOLD = 1 << BITS_PER_BYTE;
 
 /**
- * Transformer for integers using a variable-length quantity encoding
- *
- * Only supports unsigned integers
+ * Transformer for unsigned integers using a variable-length quantity encoding
  * @see https://en.wikipedia.org/wiki/Variable-length_quantity
  */
-export const LengthTransformer: Transformer<number> = {
+export const VarintTransformer: Transformer<number> = {
     isApplicable: (value) => typeof value === "number",
     serialize: (encoder, num) => {
         let length = num;

@@ -4,8 +4,11 @@ const transformers: Map<number, Transformer<unknown>> = new Map();
  * A transformer for a specific data type
  */
 export type Transformer<In> = {
+    /** Checks if the transformer is applicable for the given value */
     isApplicable: (v: unknown) => v is In;
+    /** Serializes the value into the encoder */
     serialize: (encoder: Encoder, value: In) => void; // | Promise<void>;
+    /** Deserializes the value from the decoder */
     deserialize: (decoder: Decoder) => In;
 };
 

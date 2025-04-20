@@ -1,5 +1,5 @@
 import { Tags } from "../codec.ts";
-import { LengthTransformer } from "../tagless/length.ts";
+import { VarintTransformer } from "../tagless/varint.ts";
 import { registerTransformer, type Transformer } from "../transformer.ts";
 
 /** Transformer for Maps */
@@ -10,7 +10,7 @@ export const MapTransformer: Transformer<Map<unknown, unknown>> =
             const mapIter = map.entries();
 
             // Write the length of the map
-            encoder.chain(LengthTransformer, map.size);
+            encoder.chain(VarintTransformer, map.size);
 
             // Write each item in the map
             for (let i = 0; i < map.size; i++) {
@@ -25,7 +25,7 @@ export const MapTransformer: Transformer<Map<unknown, unknown>> =
         },
         deserialize: (decoder) => {
             const map = new Map();
-            const length = decoder.chain(LengthTransformer);
+            const length = decoder.chain(VarintTransformer);
 
             // Read each item in the map
             for (let i = 0; i < length; i++) {

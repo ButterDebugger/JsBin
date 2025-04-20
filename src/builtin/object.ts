@@ -1,7 +1,7 @@
 import { Tags } from "../codec.ts";
 import { StringTransformer } from "./string.ts";
 import { registerTransformer, type Transformer } from "../transformer.ts";
-import { LengthTransformer } from "../tagless/length.ts";
+import { VarintTransformer } from "../tagless/varint.ts";
 
 /** Transformer for objects */
 export const ObjectTransformer: Transformer<Record<string, unknown>> =
@@ -14,7 +14,7 @@ export const ObjectTransformer: Transformer<Record<string, unknown>> =
             const keys = Object.keys(obj);
 
             // Write the length of the object
-            encoder.chain(LengthTransformer, keys.length);
+            encoder.chain(VarintTransformer, keys.length);
 
             // Write each item in the object
             for (let i = 0; i < keys.length; i++) {
@@ -27,7 +27,7 @@ export const ObjectTransformer: Transformer<Record<string, unknown>> =
         },
         deserialize: (decoder) => {
             const object: Record<string, unknown> = {};
-            const length = decoder.chain(LengthTransformer);
+            const length = decoder.chain(VarintTransformer);
 
             // Read each item in the object
             for (let i = 0; i < length; i++) {
