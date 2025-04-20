@@ -5,7 +5,7 @@ import { registerTransformer, type Transformer } from "../transformer.ts";
 export const UndefinedTransformer: Transformer<undefined> = registerTransformer<
     undefined
 >(Tags.undefined, {
-    isApplicable: (value) => typeof value === "undefined",
+    isApplicable: (value) => value === undefined,
     serialize: () => {},
     deserialize: () => {
         return undefined;

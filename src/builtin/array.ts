@@ -17,8 +17,8 @@ export const ArrayTransformer: Transformer<unknown[]> = registerTransformer<
         }
     },
     deserialize: (decoder) => {
-        const array = [];
         const length = decoder.chain(LengthTransformer);
+        const array = new Array(length);
 
         // Read each item in the array
         for (let i = 0; i < length; i++) {

@@ -2,7 +2,6 @@
  * The tags used in the binary format to denote the type of the data
  */
 export enum Tags {
-    End = 0, // End of Array or Object
     Object = 1, // Record<string, unknown>
     Boolean = 2,
     String = 3,

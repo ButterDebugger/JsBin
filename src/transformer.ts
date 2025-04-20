@@ -24,10 +24,10 @@ export class Encoder {
     }
 
     /**
-     * Writes an Uint8Array to the encoder
+     * Ensures the buffer has enough capacity
      */
-    write(bytes: Uint8Array): void {
-        const requiredCapacity = this.size + bytes.length;
+    private ensureCapacity(addedLength: number): void {
+        const requiredCapacity = this.size + addedLength;
 
         // Check if the buffer needs to be resized
         if (requiredCapacity > this.capacity) {
@@ -42,6 +42,14 @@ export class Encoder {
             newBuffer.set(this.buffer, 0);
             this.buffer = newBuffer;
         }
+    }
+
+    /**
+     * Writes an Uint8Array to the encoder
+     */
+    write(bytes: Uint8Array): void {
+        // Ensure the buffer has enough capacity
+        this.ensureCapacity(bytes.length);
 
         // Write the bytes
         this.buffer.set(bytes, this.size);
@@ -52,21 +60,8 @@ export class Encoder {
      * Writes a single byte to the encoder
      */
     writeByte(byte: number): void {
-        const requiredCapacity = this.size + 1;
-
-        // Check if the buffer needs to be resized
-        if (requiredCapacity > this.capacity) {
-            // Grow the buffer exponentially by the growth factor
-            this.capacity = Math.max(
-                Math.ceil(this.capacity * this.growthFactor),
-                requiredCapacity,
-            );
-
-            // Create new buffer and copy the date
-            const newBuffer = new Uint8Array(this.capacity);
-            newBuffer.set(this.buffer, 0);
-            this.buffer = newBuffer;
-        }
+        // Ensure the buffer has enough capacity
+        this.ensureCapacity(1);
 
         // Write the byte
         this.buffer[this.size++] = byte;
