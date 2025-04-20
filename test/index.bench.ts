@@ -1,5 +1,8 @@
 import { decode, encode } from "../src/index.ts";
 import superjson from "npm:superjson";
+import * as cbor from "npm:cbor2";
+import { BSON } from "npm:bson";
+import * as msgpackr from "npm:msgpackr";
 
 const obj = {
     true_bool: true,
@@ -43,6 +46,7 @@ const obj = {
     some_other_float: 12.0498794,
     neg_bigint: -9857628943.6076,
     pos_bigint: 64971238.78149236,
+    long_sentence: "the quick brown fox jumps over the lazy dog".repeat(10),
     a_map: [
         [1, "a"],
         [2, "b"],
@@ -85,6 +89,30 @@ Deno.bench({
 });
 
 Deno.bench({
+    name: "CBOR encode",
+    group: "Serialization",
+    fn(): void {
+        cbor.encode(obj);
+    },
+});
+
+Deno.bench({
+    name: "BSON serialize",
+    group: "Serialization",
+    fn(): void {
+        BSON.serialize(obj);
+    },
+});
+
+Deno.bench({
+    name: "MsgPack pack",
+    group: "Serialization",
+    fn(): void {
+        msgpackr.pack(obj);
+    },
+});
+
+Deno.bench({
     name: "JSON stringify",
     group: "Serialization",
     fn(): void {
@@ -95,6 +123,9 @@ Deno.bench({
 const encoded = encode(obj);
 const stringified = JSON.stringify(obj);
 const superStringified = superjson.stringify(obj);
+const cborified = cbor.encode(obj);
+const bsonified = BSON.serialize(obj);
+const msgpackified = msgpackr.pack(obj);
 
 Deno.bench({
     name: "JsBin decode",
@@ -110,6 +141,30 @@ Deno.bench({
     group: "Deserialization",
     fn(): void {
         superjson.parse(superStringified);
+    },
+});
+
+Deno.bench({
+    name: "CBOR decode",
+    group: "Deserialization",
+    fn(): void {
+        cbor.decode(cborified);
+    },
+});
+
+Deno.bench({
+    name: "BSON deserialize",
+    group: "Deserialization",
+    fn(): void {
+        BSON.deserialize(bsonified);
+    },
+});
+
+Deno.bench({
+    name: "MsgPack unpack",
+    group: "Deserialization",
+    fn(): void {
+        msgpackr.unpack(msgpackified);
     },
 });
 
