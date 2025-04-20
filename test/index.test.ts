@@ -39,3 +39,16 @@ Deno.test("Encode and decode", () => {
 
     assertEquals(result, value, "Decoding does not match the original value.");
 });
+
+Deno.test("long strings", () => {
+    const string = "the quick brown fox jumps over the lazy dog";
+    const value = [];
+
+    for (let i = 0; i < 1_000; i++) {
+        value.push(string.substring(0, i).padEnd(i, string));
+    }
+
+    const result = decode(encode(value));
+
+    assertEquals(result, value, "Decoding does not match the original value.");
+});

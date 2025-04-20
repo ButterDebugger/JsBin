@@ -1,4 +1,5 @@
 import { Tags } from "../codec.ts";
+import { LengthTransformer } from "../tagless/length.ts";
 import { registerTransformer, type Transformer } from "../transformer.ts";
 
 /** Transformer for Maps */
@@ -8,42 +9,30 @@ export const MapTransformer: Transformer<Map<unknown, unknown>> =
         serialize: (encoder, map) => {
             const mapIter = map.entries();
 
+            // Write the length of the map
+            encoder.chain(LengthTransformer, map.size);
+
+            // Write each item in the map
             for (let i = 0; i < map.size; i++) {
                 const next = mapIter.next();
                 if (next.done) break;
 
                 const [key, value] = next.value;
 
-                if (i % 0xff === 0) {
-                    encoder.write(
-                        new Uint8Array([Math.min(map.size - i, 0xff)]),
-                    );
-                }
-
                 encoder.serialize(key);
                 encoder.serialize(value);
             }
-
-            encoder.writeByte(Tags.End); // End of object marker
         },
         deserialize: (decoder) => {
             const map = new Map();
-            let itemsLeft = 0;
+            const length = decoder.chain(LengthTransformer);
 
-            while (true) {
-                if (itemsLeft === 0) {
-                    const extension = decoder.readByte();
-                    if (extension === 0) break;
-
-                    itemsLeft += extension;
-                }
-
+            // Read each item in the map
+            for (let i = 0; i < length; i++) {
                 const key = decoder.deserialize();
                 const value = decoder.deserialize();
 
                 map.set(key, value);
-
-                itemsLeft--;
             }
 
             return map;
