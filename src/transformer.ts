@@ -4,6 +4,8 @@ const transformers: Map<number, Transformer<unknown>> = new Map();
  * A transformer for a specific data type
  */
 export type Transformer<In> = {
+    /** Whether the transformer writes its own tag */
+    untagged?: boolean;
     /** Checks if the transformer is applicable for the given value */
     isApplicable: (v: unknown) => v is In;
     /** Serializes the value into the encoder */
@@ -83,8 +85,10 @@ export class Encoder {
     serialize(value: unknown): void {
         for (const [tag, transformer] of transformers) {
             if (transformer.isApplicable(value)) {
-                this.writeByte(tag);
+                // Write the tag if the transformer is not untagged
+                if (transformer.untagged === true) this.writeByte(tag);
 
+                // Serialize the value
                 transformer.serialize(this, value);
                 break;
             }
@@ -176,13 +180,38 @@ export class Decoder {
 export function registerTransformer<In>(
     tag: number,
     transformer: Transformer<In>,
+): Transformer<In>;
+
+/**
+ * Registers a new transformer which uses multiple tags
+ * @param tag The tag to use for the transformer
+ * @param transformer The transformer to register
+ * @returns The registered transformer
+ */
+export function registerTransformer<In>(
+    tags: number[],
+    transformer: Transformer<In>,
+): Transformer<In>;
+
+export function registerTransformer<In>(
+    tag: number | number[],
+    transformer: Transformer<In>,
 ): Transformer<In> {
-    if (transformers.has(tag)) {
-        throw new Error(`Transformer for tag '${tag}' already exists.`);
+    const tags = [tag].flat();
+
+    // Check if any of the tags are in use
+    for (const tag of tags) {
+        if (transformers.has(tag)) {
+            throw new Error(`Transformer for tag '${tag}' already exists.`);
+        }
     }
 
-    transformers.set(tag, transformer as Transformer<unknown>);
+    // Register the transformer under each tag
+    for (const tag of tags) {
+        transformers.set(tag, transformer as Transformer<unknown>);
+    }
 
+    // Return the transformer
     return transformer;
 }
 
