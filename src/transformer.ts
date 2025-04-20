@@ -86,7 +86,7 @@ export class Encoder {
         for (const [tag, transformer] of transformers) {
             if (transformer.isApplicable(value)) {
                 // Write the tag if the transformer is not untagged
-                if (transformer.untagged === true) this.writeByte(tag);
+                if (transformer.untagged !== true) this.writeByte(tag);
 
                 // Serialize the value
                 transformer.serialize(this, value);
