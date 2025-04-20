@@ -45,6 +45,50 @@ const decoded = decode(encoded);
 console.log(decoded); // { message: "Hello, world!" }
 ```
 
+## Extensibility
+
+JsBin is designed to be extensible, allowing you to add support for custom data
+types. You can do this by creating your own transformers to handle specific data
+types.
+
+```javascript
+import { registerTransformer } from "@debutter/jsbin";
+
+// Define a custom transformer for a specific data type
+const MyCustomTransformer = registerTransformer(0, {
+    isApplicable: (value) => value instanceof MyCustomType,
+    serialize: (encoder, value) => {
+        encoder.write(/* Encode the value */);
+        // ...
+    },
+    deserialize: (decoder) => {
+        return new MyCustomType(/* Decode the value */);
+    },
+});
+```
+
+Additionally, you can also chain together other transformers to encode and
+decode more complex data structures.
+
+```javascript
+import { NumberTransformer, registerTransformer } from "@debutter/jsbin";
+
+// Define a custom transformer for a specific data type
+const Vector2dTransformer = registerTransformer(0, {
+    isApplicable: (value) => value instanceof Vector2d,
+    serialize: (encoder, vector) => {
+        encoder.chain(NumberTransformer, vector.x);
+        encoder.chain(NumberTransformer, vector.y);
+    },
+    deserialize: (decoder) => {
+        const x = decoder.chain(NumberTransformer);
+        const y = decoder.chain(NumberTransformer);
+
+        return new Vector2d(x, y);
+    },
+});
+```
+
 # Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
