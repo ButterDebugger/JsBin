@@ -7,8 +7,11 @@ export const BigIntTransformer: Transformer<bigint> = registerTransformer<
 >(Tags.BigInt, {
     isApplicable: (value) => typeof value === "bigint",
     serialize: (encoder, bigint) => {
-        encoder.writeByte(bigint < 0 ? 1 : 0);
-        let nonNegativeBigint = bigint < 0 ? -bigint : bigint;
+        const isNegative = bigint < 0;
+
+        encoder.writeByte(isNegative ? 1 : 0);
+
+        let nonNegativeBigint = isNegative ? -bigint : bigint;
 
         if (nonNegativeBigint === 0n) {
             encoder.writeByte(0);

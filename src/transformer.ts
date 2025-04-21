@@ -1,11 +1,11 @@
+import { VarintTransformer } from "./tagless/varint.ts";
+
 const transformers: Map<number, Transformer<unknown>> = new Map();
 
 /**
  * A transformer for a specific data type
  */
 export type Transformer<In> = {
-    /** Whether the transformer writes its own tag */
-    untagged?: boolean;
     /** Checks if the transformer is applicable for the given value */
     isApplicable: (v: unknown) => v is In;
     /** Serializes the value into the encoder */
@@ -86,7 +86,7 @@ export class Encoder {
         for (const [tag, transformer] of transformers) {
             if (transformer.isApplicable(value)) {
                 // Write the tag if the transformer is not untagged
-                if (transformer.untagged !== true) this.writeByte(tag);
+                this.chain(VarintTransformer, tag);
 
                 // Serialize the value
                 transformer.serialize(this, value);
@@ -152,7 +152,7 @@ export class Decoder {
      * @returns The decoded value
      */
     deserialize(): unknown {
-        const tag = this.readByte();
+        const tag = this.chain(VarintTransformer);
         const transformer = transformers.get(tag);
 
         if (!transformer) {
@@ -180,36 +180,14 @@ export class Decoder {
 export function registerTransformer<In>(
     tag: number,
     transformer: Transformer<In>,
-): Transformer<In>;
-
-/**
- * Registers a new transformer which uses multiple tags
- * @param tag The tag to use for the transformer
- * @param transformer The transformer to register
- * @returns The registered transformer
- */
-export function registerTransformer<In>(
-    tags: number[],
-    transformer: Transformer<In>,
-): Transformer<In>;
-
-export function registerTransformer<In>(
-    tag: number | number[],
-    transformer: Transformer<In>,
 ): Transformer<In> {
-    const tags = [tag].flat();
-
-    // Check if any of the tags are in use
-    for (const tag of tags) {
-        if (transformers.has(tag)) {
-            throw new Error(`Transformer for tag '${tag}' already exists.`);
-        }
+    // Check if the tag is already used
+    if (transformers.has(tag)) {
+        throw new Error(`Transformer for tag '${tag}' already exists.`);
     }
 
-    // Register the transformer under each tag
-    for (const tag of tags) {
-        transformers.set(tag, transformer as Transformer<unknown>);
-    }
+    // Register the transformer under the tag
+    transformers.set(tag, transformer as Transformer<unknown>);
 
     // Return the transformer
     return transformer;

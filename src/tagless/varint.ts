@@ -11,6 +11,8 @@ const CONTINUATION_THRESHOLD = 1 << BITS_PER_BYTE;
 
 /**
  * Transformer for unsigned integers using a variable-length quantity encoding
+ *
+ * This is also what's used to encode tags
  * @see https://en.wikipedia.org/wiki/Variable-length_quantity
  */
 export const VarintTransformer: Transformer<number> = {
