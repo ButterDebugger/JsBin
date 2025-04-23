@@ -18,11 +18,11 @@ export const ArrayTransformer: Transformer<unknown[]> = registerTransformer<
     },
     deserialize: (decoder) => {
         const length = decoder.chain(VarintTransformer);
-        const array = [];
-
+        const array = new Array(length);
+    
         // Read each item in the array
         for (let i = 0; i < length; i++) {
-            array.push(decoder.deserialize());
+            array[i] = (decoder.deserialize());
         }
 
         return array;

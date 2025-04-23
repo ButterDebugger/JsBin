@@ -118,7 +118,7 @@ export class Decoder {
      * @returns The read bytes
      */
     read(length: number): Uint8Array {
-        const content = this.bytes.slice(this.cursor, this.cursor + length);
+        const content = this.bytes.subarray(this.cursor, this.cursor + length);
         this.cursor += length;
         return content;
     }
