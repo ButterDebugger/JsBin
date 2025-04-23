@@ -26,10 +26,10 @@ enum NumberIds {
     NegativeInfinity = 13,
 }
 
-// Pre-allocate buffer and view for number serialization to reduce allocations
+// Pre-allocate a 8-byte buffer and a data view for number serialization
 const numBuffer = new ArrayBuffer(8);
 const numView = new DataView(numBuffer);
-const numUint8Array = new Uint8Array(numBuffer); // we create a Uint8Array view over the same buffer for easier slicing.
+const numUint8Array = new Uint8Array(numBuffer);
 
 /** Transformer for numbers */
 export const NumberTransformer: Transformer<number> = registerTransformer(
@@ -50,6 +50,7 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                             ? NumberIds.NegativeInt8
                             : NumberIds.PositiveInt8,
                     );
+
                     encoder.writeByte(absNum);
                 } else if (num >= -65536 && num <= 65535) {
                     // Write the number as a 16-bit integer
@@ -75,6 +76,7 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                     encoder.write(numUint8Array.subarray(0, 4));
                 } else {
                     // Write the number as a 64-bit integer
+                    // NOTE: The number is in the safe integer range, only using 53 bits of the available 64 bits
                     encoder.chain(
                         VarintTransformer,
                         isNegative
@@ -86,8 +88,10 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                     encoder.write(numUint8Array.subarray(0, 8));
                 }
             } else {
-                // Otherwise, the number is a float or special value
+                // Otherwise, the number is a float or a special value
+                // Check if the float is 16-bit, 32-bit, or 64-bit
                 if (Math.f16round(num) === num) {
+                    // Infinities are both considered a 16-bit float, so we'll check for them here
                     if (num === Number.POSITIVE_INFINITY) {
                         encoder.chain(
                             VarintTransformer,
@@ -99,7 +103,7 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                             NumberIds.NegativeInfinity,
                         );
                     } else {
-                        // Write the number as a 16-bit float
+                        // Otherwise, write the number as a 16-bit float
                         encoder.chain(VarintTransformer, NumberIds.Float16);
 
                         numView.setFloat16(0, num, true);
@@ -112,7 +116,7 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                     numView.setFloat32(0, num, true);
                     encoder.write(numUint8Array.subarray(0, 4));
                 } else if (Number.isNaN(num)) {
-                    // yippee, NaN
+                    // NaN is the last number type to check, so we'll check for it and write it here
                     encoder.chain(VarintTransformer, NumberIds.NaN);
                 } else {
                     // Otherwise, write the number as a 64-bit float
@@ -130,17 +134,29 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                 // Floats
                 case NumberIds.Float16: {
                     const bytes = decoder.read(2);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return view.getFloat16(0, true);
                 }
                 case NumberIds.Float32: {
                     const bytes = decoder.read(4);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return view.getFloat32(0, true);
                 }
                 case NumberIds.Float64: {
                     const bytes = decoder.read(8);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return view.getFloat64(0, true);
                 }
                 // Positive integers
@@ -148,17 +164,29 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                     return decoder.readByte();
                 case NumberIds.PositiveInt16: {
                     const bytes = decoder.read(2);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return view.getUint16(0, true);
                 }
                 case NumberIds.PositiveInt32: {
                     const bytes = decoder.read(4);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return view.getUint32(0, true);
                 }
                 case NumberIds.PositiveInt64: {
                     const bytes = decoder.read(8);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
 
                     return Number(view.getBigUint64(0, true));
                 }
@@ -167,17 +195,29 @@ export const NumberTransformer: Transformer<number> = registerTransformer(
                     return -decoder.readByte() - 1;
                 case NumberIds.NegativeInt16: {
                     const bytes = decoder.read(2);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return -view.getUint16(0, true) - 1;
                 }
                 case NumberIds.NegativeInt32: {
                     const bytes = decoder.read(4);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return -view.getUint32(0, true) - 1;
                 }
                 case NumberIds.NegativeInt64: {
                     const bytes = decoder.read(8);
-                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    const view = new DataView(
+                        bytes.buffer,
+                        bytes.byteOffset,
+                        bytes.byteLength,
+                    );
                     return -Number(view.getBigUint64(0, true)) - 1;
                 }
                 // Special numbers
