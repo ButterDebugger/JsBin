@@ -84,16 +84,17 @@ export class Encoder {
      * Encodes a value
      */
     serialize(value: unknown): void {
-        for (const [tag, transformer] of transformers) {
+        for (const [tag, transformer] of transformers.entries()) {
             if (transformer.isApplicable(value)) {
                 // Write the tag if the transformer is not untagged
                 this.chain(VarintTransformer, tag);
 
                 // Serialize the value
                 transformer.serialize(this, value);
-                break;
+                return;
             }
         }
+        throw new UnknownTagError(-1);
     }
 
     /**
