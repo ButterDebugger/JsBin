@@ -1,5 +1,8 @@
 # JsBin
 
+[![JSR](https://jsr.io/badges/@debutter/jsbin)](https://jsr.io/@debutter/jsbin)
+[![JSR Score](https://jsr.io/badges/@debutter/jsbin/score)](https://jsr.io/@debutter/jsbin)
+
 A simple and lightweight library designed to provide efficient binary
 serialization for JavaScript objects. This makes it easy to encode JavaScript
 data structures into compact binary formats, saving space and improving
