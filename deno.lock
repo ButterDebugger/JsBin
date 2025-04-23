@@ -10,6 +10,7 @@
     "jsr:@std/path@^1.0.6": "1.0.8",
     "npm:bson@*": "6.10.3",
     "npm:cbor2@*": "1.12.0",
+    "npm:core-js@^3.41.0": "3.41.0",
     "npm:msgpackr@*": "1.11.2",
     "npm:superjson@*": "2.2.2"
   },
@@ -72,6 +73,9 @@
         "is-what"
       ]
     },
+    "core-js@3.41.0": {
+      "integrity": "sha512-SJ4/EHwS36QMJd6h/Rg+GyR4A5xE0FSI3eZ+iBVpfqf1x0eTSg1smWLHrA+2jQThZSh97fmSgFSU8B61nxosxA=="
+    },
     "detect-libc@2.0.3": {
       "integrity": "sha512-bwy0MGW55bG41VqxxypOsdSdGqLwXPI/focwgTYCFMbdUiBAxLg9CFzG08sz2aqzknwiX7Hkl0bQENjg8iLByw=="
     },
@@ -117,7 +121,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1"
+      "jsr:@std/assert@1",
+      "npm:core-js@^3.41.0"
     ]
   }
 }

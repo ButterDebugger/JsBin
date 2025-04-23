@@ -1,3 +1,4 @@
+import { TransformerTagTakenError, UnknownTagError } from "./errors.ts";
 import { VarintTransformer } from "./tagless/varint.ts";
 
 const transformers: Map<number, Transformer<unknown>> = new Map();
@@ -156,7 +157,7 @@ export class Decoder {
         const transformer = transformers.get(tag);
 
         if (!transformer) {
-            throw new Error(`No transformer found for tag '${tag}'.`);
+            throw new UnknownTagError(tag);
         }
 
         return transformer.deserialize(this);
@@ -183,7 +184,7 @@ export function registerTransformer<In>(
 ): Transformer<In> {
     // Check if the tag is already used
     if (transformers.has(tag)) {
-        throw new Error(`Transformer for tag '${tag}' already exists.`);
+        throw new TransformerTagTakenError(tag);
     }
 
     // Register the transformer under the tag

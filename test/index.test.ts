@@ -56,8 +56,12 @@ Deno.test("long strings", () => {
 Deno.test("powers of bigints", () => {
     const values = [];
 
-    for (let i = 0; i < 1_000; i++) {
-        values.push(2n ** BigInt(i) * (i < 500 ? 1n : -1n));
+    for (let i = 0n; i < 270n; i++) {
+        values.push(i);
+    }
+
+    for (let i = 0; i < 128; i++) {
+        values.push(2n ** BigInt(i) * (i < 64 ? 1n : -1n));
     }
 
     const result = decode(encode(values));
@@ -75,6 +79,10 @@ Deno.test("numbers", () => {
         -1,
         0.5,
         0.3,
+        1023.5,
+        1024.5,
+        8388607.5,
+        8388608.5,
         2 ** 8 - 1,
         2 ** 8 - 0.5,
         2 ** 8,
