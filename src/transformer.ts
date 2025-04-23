@@ -1,7 +1,8 @@
 import { TransformerTagTakenError, UnknownTagError } from "./errors.ts";
 import { VarintTransformer } from "./tagless/varint.ts";
 
-const transformers: Map<number, Transformer<unknown>> = new Map();
+const _transformers: Map<number, Transformer<unknown>> = new Map();
+const transformersArr: (Transformer<unknown> | undefined)[] = [];
 
 /**
  * A transformer for a specific data type
@@ -84,16 +85,18 @@ export class Encoder {
      * Encodes a value
      */
     serialize(value: unknown): void {
-        for (const [tag, transformer] of transformers) {
-            if (transformer.isApplicable(value)) {
+        for (let tag = 0; tag < transformersArr.length; tag++) {
+            const transformer = transformersArr[tag];
+            if (transformer && transformer.isApplicable(value)) {
                 // Write the tag if the transformer is not untagged
                 this.chain(VarintTransformer, tag);
 
                 // Serialize the value
                 transformer.serialize(this, value);
-                break;
+                return;
             }
         }
+        throw new UnknownTagError(-1);
     }
 
     /**
@@ -154,7 +157,7 @@ export class Decoder {
      */
     deserialize(): unknown {
         const tag = this.chain(VarintTransformer);
-        const transformer = transformers.get(tag);
+        const transformer = transformersArr[tag];
 
         if (!transformer) {
             throw new UnknownTagError(tag);
@@ -183,12 +186,12 @@ export function registerTransformer<In>(
     transformer: Transformer<In>,
 ): Transformer<In> {
     // Check if the tag is already used
-    if (transformers.has(tag)) {
+    if (transformersArr[tag]) {
         throw new TransformerTagTakenError(tag);
     }
 
     // Register the transformer under the tag
-    transformers.set(tag, transformer as Transformer<unknown>);
+    transformersArr[tag] = transformer as Transformer<unknown>;
 
     // Return the transformer
     return transformer;
