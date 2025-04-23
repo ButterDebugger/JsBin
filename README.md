@@ -92,7 +92,8 @@ const Vector2dTransformer = registerTransformer(0, {
 });
 ```
 
-Note that custom transformer tags ranging from 0 to 127 are reserved by this library and are subject to being taken.
+Note that custom transformer tags ranging from 0 to 127 are reserved by this
+library and are subject to being taken.
 
 # Contributing
 
