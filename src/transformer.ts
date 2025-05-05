@@ -3,16 +3,21 @@ import { VarintTransformer } from "./tagless/varint.ts";
 
 const transformers: Map<number, Transformer<unknown>> = new Map();
 
-/**
- * A transformer for a specific data type
- */
+/** Checks if the transformer is applicable for the given value */
+export type ApplicableFunction<In> = (v: unknown) => v is In;
+/** Serializes the value into the encoder */
+export type SerializeFunction<In> = (encoder: Encoder, value: In) => void; // | Promise<void>;
+/** Deserializes the value from the decoder */
+export type DeserializeFunction<In> = (decoder: Decoder) => In;
+
+/** A transformer for a specific data type */
 export type Transformer<In> = {
     /** Checks if the transformer is applicable for the given value */
-    isApplicable: (v: unknown) => v is In;
+    isApplicable: ApplicableFunction<In>;
     /** Serializes the value into the encoder */
-    serialize: (encoder: Encoder, value: In) => void; // | Promise<void>;
+    serialize: SerializeFunction<In>;
     /** Deserializes the value from the decoder */
-    deserialize: (decoder: Decoder) => In;
+    deserialize: DeserializeFunction<In>;
 };
 
 /**
