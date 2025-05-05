@@ -48,6 +48,24 @@ const decoded = decode(encoded);
 console.log(decoded); // { message: "Hello, world!" }
 ```
 
+## Supported Data Types
+
+JsBin supports a wide range of JavaScript data types, including:
+
+- Objects
+- Arrays
+- Strings
+- Numbers
+- BigInts
+- Booleans
+- Null
+- Undefined
+- Dates
+- Sets
+- Maps
+- Regular Expressions
+- URLs
+
 ## Extensibility
 
 JsBin is designed to be extensible, allowing you to add support for custom data
