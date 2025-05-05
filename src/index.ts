@@ -17,5 +17,11 @@ export * from "./builtin/url.ts";
 // Built-in typed arrays:
 export * from "./builtin/typedArrays/uint8array.ts";
 export * from "./builtin/typedArrays/int8array.ts";
+export * from "./builtin/typedArrays/uint16array.ts";
+export * from "./builtin/typedArrays/int16array.ts";
+export * from "./builtin/typedArrays/uint32array.ts";
+export * from "./builtin/typedArrays/int32array.ts";
+export * from "./builtin/typedArrays/float32array.ts";
+export * from "./builtin/typedArrays/float64array.ts";
 // Tag-less transformers:
 export * from "./tagless/varint.ts";
