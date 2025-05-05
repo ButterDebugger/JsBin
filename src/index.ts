@@ -14,5 +14,8 @@ export * from "./builtin/set.ts";
 export * from "./builtin/map.ts";
 export * from "./builtin/regexp.ts";
 export * from "./builtin/url.ts";
+// Built-in typed arrays:
+export * from "./builtin/typedArrays/uint8array.ts";
+export * from "./builtin/typedArrays/int8array.ts";
 // Tag-less transformers:
 export * from "./tagless/varint.ts";
