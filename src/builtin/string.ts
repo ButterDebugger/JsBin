@@ -42,11 +42,6 @@ export const StringTransformer: Transformer<string> = registerTransformer<
     },
     deserialize: (decoder) => {
         const length = decoder.chain(VarintTransformer);
-        
-        if (length === 0) {
-            return "";
-        }
-        
         return textDecoder.decode(decoder.read(length));
     },
 });
